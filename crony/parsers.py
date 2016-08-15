@@ -7,6 +7,8 @@ def parse_range_callback(ctx, param, value):
     """Callback function that parses the range entered
     from the commandline
     """
+    print param
+    print value
     try:
         if not value:
             raise ValueError("ids required")
@@ -46,7 +48,7 @@ def parse_range(value):
             start_idx = int(cron_id_pcs[0])
             end_idx = int(cron_id_pcs[1]) + 1
 
-            if start_idx < 0 or end_idx < start_idx:
+            if start_idx <= 0 or end_idx < start_idx:
                 raise ValueError("Invalid range: %s" % cron_id)
 
             for cid in range(start_idx, end_idx):
