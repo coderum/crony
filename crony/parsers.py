@@ -7,8 +7,6 @@ def parse_range_callback(ctx, param, value):
     """Callback function that parses the range entered
     from the commandline
     """
-    print param
-    print value
     try:
         if not value:
             raise ValueError("ids required")
