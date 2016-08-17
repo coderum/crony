@@ -41,11 +41,9 @@ def rm(ids, dst_host):
     confirm_msg = "Delete all jobs at: %s? (yes/no)" % (dst_host['hostname'],)
 
     # delete entire crontab
-    if 0 in ids and (click.prompt(confirm_msg) == 'yes'):
+    if len(ids) == 1 and 0 in ids and (click.prompt(confirm_msg) == 'yes'):
         dst_ct = Crontab(**dst_host)
         dst_ps = dst_ct.remove()
-        for out in dst_ps.stdout:
-            click.echo(out)
         click.echo("Crontab deleted")
     else:
         if not click.prompt("Delete selected jobs? (yes/no)") == "yes":
@@ -56,10 +54,11 @@ def rm(ids, dst_host):
         dst_ct = Crontab(**dst_host)
         dst_ps = dst_ct.list()
         dst_jobs = parsers.parse_file(dst_ps.stdout)
+        rm_jobs = dst_jobs.in_ids(ids)
         job_str = StringIO()
 
-        for cid in ids:
-            dst_jobs.remove(cid)
+        for rm_job in rm_jobs:
+            dst_jobs.remove(rm_job)
 
         utils.write_jobs(dst_jobs, job_str)
         rmt_ct = Crontab(**dst_host)
@@ -70,9 +69,6 @@ def rm(ids, dst_host):
             rmt_ps = rmt_ct.copy_new(job_str.getvalue())
         else:
             rmt_ps = rmt_ct.remove()
-
-        for out in rmt_ps.stdout:
-            click.echo(out)
 
         click.echo("Selected jobs deleted")
 
